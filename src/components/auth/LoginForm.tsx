@@ -1,5 +1,6 @@
 'use client';
 import { signIn } from '@/lib/auth-client';
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { FcGoogle } from "react-icons/fc";
 import { SiGithub } from "react-icons/si";
@@ -123,9 +124,9 @@ const LoginForm = () => {
 
       <p className="text-center text-sm text-gray-600">
         Don't have an account?{' '}
-        <a href="/register" className="text-blue-600 hover:underline font-medium">
+        <Link href="/register" className="text-blue-600 hover:underline font-medium">
           Register here
-        </a>
+        </Link>
       </p>
     </div>
   )

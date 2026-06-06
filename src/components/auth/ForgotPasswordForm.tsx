@@ -1,8 +1,26 @@
-import React from 'react'
+import { forgetPassword } from '@/lib/auth-client';
+import Link from 'next/link';
+import React, { useState } from 'react'
 
 const ForgotPasswordForm = () => {
+  const [email, setEmail] = useState<string>('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    if(!email) {
+      return
+    }
+    e.preventDefault();
+    try {
+      await forgetPassword({
+        email,
+        redirectTo: '/'
+      })
+    }catch (error) {
+      console.error("Error sending reset link:", error);
+    }
+  }
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
           Email Address
@@ -14,6 +32,8 @@ const ForgotPasswordForm = () => {
           placeholder="you@example.com"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
 
@@ -26,9 +46,9 @@ const ForgotPasswordForm = () => {
 
       <p className="text-center text-sm text-gray-600 mt-4">
         Remember your password?{' '}
-        <a href="/login" className="text-blue-600 hover:underline font-medium">
+        <Link href="/login" className="text-blue-600 hover:underline font-medium">
           Back to Login
-        </a>
+        </Link>
       </p>
     </form>
   )

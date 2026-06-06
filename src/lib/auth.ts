@@ -58,7 +58,16 @@ export function getAuth(env: any) {
       onEmailVerification: async (user) => {
         console.log("user verified:", user.emailVerified);
         // Handle post-verification logic (e.g., welcome email, analytics, etc.)
-        
+        await env.EMAIL_QUEUE.send(
+          {
+            type: "welcome_email",
+            payload: {
+              email: user.email,
+              name: user.name,
+            },
+          },
+          { delaySeconds: 600 }, //delay for 10 minutes
+        );
       },
     },
     // ✅ Social Providers
