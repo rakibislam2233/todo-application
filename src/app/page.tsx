@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+export const dynamic = "force-dynamic";
 const HomePage = async () => {
   const { env } = getCloudflareContext();
   const auth = getAuth(env);

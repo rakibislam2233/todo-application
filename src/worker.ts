@@ -1,3 +1,4 @@
+// @ts-ignore
 import nextHandler from '../.open-next/worker.js';
 
 export default {
