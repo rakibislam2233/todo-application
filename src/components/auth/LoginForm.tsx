@@ -1,11 +1,54 @@
-import React from 'react';
+'use client';
+import { signIn } from '@/lib/auth-client';
+import React, { useState } from 'react';
 import { FcGoogle } from "react-icons/fc";
 import { SiGithub } from "react-icons/si";
 
 const LoginForm = () => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if(!email || !password) {
+      return;
+    }
+    try {
+      await signIn.email({
+        email: email,
+        password: password,
+        callbackURL: '/'
+      })
+
+    }catch (error) {
+      console.error('Login error:', error);
+    }
+
+  }
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn.social({
+        provider: 'google',
+        callbackURL: '/'
+      });
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+    }
+  }
+
+  const handleGithubSignIn = async () => {
+    try {
+      await signIn.social({
+        provider: 'github',
+        callbackURL: '/'
+      });
+    } catch (error) {
+      console.error('Github Sign-In error:', error);
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email Address
@@ -17,6 +60,8 @@ const LoginForm = () => {
             placeholder="you@example.com"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
@@ -36,6 +81,8 @@ const LoginForm = () => {
             placeholder="••••••••"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
@@ -59,6 +106,7 @@ const LoginForm = () => {
         <button 
           type="button" 
           className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+          onClick={handleGoogleSignIn}
         >
           <FcGoogle className="w-4 h-4" /> 
           <span>Google</span>
@@ -66,6 +114,7 @@ const LoginForm = () => {
         <button 
           type="button" 
           className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+          onClick={handleGithubSignIn}
         >
           <SiGithub className="w-4 h-4" />
           <span>GitHub</span>

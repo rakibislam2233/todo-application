@@ -1,34 +1,32 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "todo-application",
-	"main": ".open-next/worker.js",
-	"compatibility_date": "2026-06-05",
-	"compatibility_flags": [
-		"nodejs_compat",
-		"global_fetch_strictly_public"
-	],
-	"assets": {
-		"binding": "ASSETS",
-		"directory": ".open-next/assets",
-	},
-	"images": {
-		"binding": "IMAGES",
-	},
-	"services": [
-		{
-			"binding": "WORKER_SELF_REFERENCE",
-			"service": "todo-application",
-		},
-	],
-	"observability": {
-		"enabled": true,
-	},
-	"upload_source_maps": true,
-	"hyperdrive": [
-		{
-			"binding": "HYPERDRIVE",
-			"id": "bfeeacc2a0f6456dbc558158d0ea73f6",
-		},
-	],
-	// "vars": {  "MY_VARIABLE": "production_value" }
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "todo-application",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-05",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets",
+  },
+  "images": {
+    "binding": "IMAGES",
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "todo-application",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+  "upload_source_maps": true,
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "bfeeacc2a0f6456dbc558158d0ea73f6",
+      "localConnectionString": "postgresql://neondb_owner:npg_zCSLY62tHQnu@ep-spring-resonance-aofe5ry7-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    },
+  ],
+  // "vars": {  "MY_VARIABLE": "production_value" }
 }

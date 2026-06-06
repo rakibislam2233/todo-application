@@ -1,12 +1,55 @@
-import React from 'react';
+'use client'
+import { signIn, signUp } from '@/lib/auth-client';
+import React, { useState } from 'react';
 import { FcGoogle } from "react-icons/fc";
 import { SiGithub } from "react-icons/si";
 
 
 const RegisterForm = () => {
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+      if(!name || !email || !password) {
+        return;
+      }
+      try {
+     await signUp.email({
+        name: name,
+        email: email,
+        password: password,
+        callbackURL: '/'
+      })
+      } catch (error) {
+        console.error('Registration error:', error);
+      }
+  }
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn.social({
+        provider: 'google',
+        callbackURL: '/'
+      });
+    }
+      catch (error) {
+        console.error('Google Sign-In error:', error);
+      }
+  }
+  const handleGithubSignIn = async () => {
+    try {
+      await signIn.social({
+        provider: 'github',
+        callbackURL: '/'
+      });
+    } catch (error) {
+      console.error('GitHub Sign-In error:', error);
+    }
+  } 
   return (
     <div className="space-y-6">
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
             Full Name
@@ -18,6 +61,8 @@ const RegisterForm = () => {
             placeholder="John Doe"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
             required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
@@ -32,6 +77,8 @@ const RegisterForm = () => {
             placeholder="you@example.com"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
@@ -46,6 +93,8 @@ const RegisterForm = () => {
             placeholder="••••••••"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
@@ -67,6 +116,7 @@ const RegisterForm = () => {
       {/* Social Logins */}
       <div className="grid grid-cols-2 gap-3">
         <button 
+          onClick={handleGoogleSignIn}
           type="button" 
           className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
         >
@@ -74,6 +124,7 @@ const RegisterForm = () => {
           <span>Google</span>
         </button>
         <button 
+          onClick={handleGithubSignIn}
           type="button" 
           className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
         >
