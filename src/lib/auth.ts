@@ -1,10 +1,11 @@
+import { WelcomeEmailTemplate } from "./email/WelcomeTemplate";
 import { getDb } from "@/db";
+import * as schema from "@/db/schema";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import * as schema from "@/db/schema";
-import resend from "./resend";
 import ResetPasswordEmailTemplate from "./email/ResetPasswordEmailTemplate";
 import VerifyEmailTemplate from "./email/VerifyEmailTemplate";
+import resend from "./resend";
 
 export function getAuth(env: any) {
   const db = getDb(env);
@@ -24,16 +25,20 @@ export function getAuth(env: any) {
       sendResetPassword: async ({ user, url, token }) => {
         console.log("Reset Url", url);
         // Send reset password email to user
-        await resend.emails.send({
-          from: "Todo App <0dE0u@example.com>",
-          to: user.email,
-          subject: "Reset your Todo Application password",
-          react: ResetPasswordEmailTemplate({
-            username: user.name,
-            resetUrl: url,
-            expiresInMinutes: "60",
-          }),
-        });
+        try {
+          await resend.emails.send({
+            from: "Todo App <onboarding@resend.dev>",
+            to: user.email,
+            subject: "Reset your Todo Application password",
+            react: ResetPasswordEmailTemplate({
+              username: user.name,
+              resetUrl: url,
+              expiresInMinutes: "60",
+            }),
+          });
+        } catch (error) {
+          console.error("Error sending reset password email:", error);
+        }
       },
       resetPasswordTokenExpiresIn: 3600, // 1 hour
     },
@@ -44,30 +49,31 @@ export function getAuth(env: any) {
       sendVerificationEmail: async ({ user, url, token }) => {
         console.log("Verification Url", url);
         // Send verification email to user
-        await resend.emails.send({
-          from: "Todo App <0dE0u@example.com>",
-          to: user.email,
-          subject: "Verify your email for Todo Application",
-          react: VerifyEmailTemplate({
-            username: user.name,
-            verifyUrl: url,
-          }),
-        });
+        try {
+          await resend.emails.send({
+            from: "Todo App <onboarding@resend.dev>",
+            to: user.email,
+            subject: "Verify your email for Todo Application",
+            react: VerifyEmailTemplate({
+              username: user.name,
+              verifyUrl: url,
+            }),
+          });
+        } catch (error) {
+          console.error("Error sending verification email:", error);
+        }
+        console.log("Verification email sent to:", user.email);
       },
       expiresIn: 3600, // 1 hour
       onEmailVerification: async (user) => {
-        console.log("user verified:", user.emailVerified);
-        // Handle post-verification logic (e.g., welcome email, analytics, etc.)
-        await env.EMAIL_QUEUE.send(
-          {
-            type: "welcome_email",
-            payload: {
-              email: user.email,
-              name: user.name,
-            },
-          },
-          { delaySeconds: 600 }, //delay for 10 minutes
-        );
+        await resend.emails.send({
+          from: "Todo App <onboarding@resend.dev>",
+          to: user.email,
+          subject: "Welcome to Todo Application! 🎉",
+          react: WelcomeEmailTemplate({
+            username: user.name,
+          }),
+        });
       },
     },
     // ✅ Social Providers

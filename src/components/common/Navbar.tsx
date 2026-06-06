@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { LogOut, User, Menu, X, CheckCircle, ShieldAlert } from "lucide-react";
@@ -10,7 +10,6 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const router = useRouter();
-
   const handleSignOut = async () => {
     await authClient.signOut({
       fetchOptions: {

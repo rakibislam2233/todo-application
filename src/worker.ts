@@ -8,7 +8,6 @@ export default {
     for (const message of batch.messages) {
       console.log(`Processing message: ${message.id}`);
       console.log(`Payload:`, message.body);
-    
       message.ack();
     }
   }

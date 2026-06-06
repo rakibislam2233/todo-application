@@ -1,4 +1,5 @@
 'use client';
+
 import { signIn } from '@/lib/auth-client';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -8,48 +9,59 @@ import { SiGithub } from "react-icons/si";
 const LoginForm = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!email || !password) {
-      return;
-    }
+    if (!email || !password) return;
+
+    setError(null);
+    setIsLoading(true);
+
     try {
       await signIn.email({
         email: email,
         password: password,
         callbackURL: '/'
-      })
-
-    }catch (error) {
-      console.error('Login error:', error);
+      }, {
+        onError: (ctx) => {
+          setError(ctx.error.message || "Invalid email or password.");
+          setIsLoading(false);
+        }
+      });
+    } catch (err) {
+      setError("An unexpected error occurred during sign in.");
+      setIsLoading(false);
     }
+  };
 
-  }
-  const handleGoogleSignIn = async () => {
+  const handleSocialSignIn = async (provider: 'google' | 'github') => {
+    setError(null);
     try {
       await signIn.social({
-        provider: 'google',
+        provider,
         callbackURL: '/'
+      }, {
+        onError: (ctx) => {
+          setError(ctx.error.message || `Failed to sign in with ${provider}.`);
+        }
       });
-    } catch (error) {
-      console.error('Google Sign-In error:', error);
+    } catch (err) {
+      setError(`An error occurred with ${provider} sign in.`);
     }
-  }
-
-  const handleGithubSignIn = async () => {
-    try {
-      await signIn.social({
-        provider: 'github',
-        callbackURL: '/'
-      });
-    } catch (error) {
-      console.error('Github Sign-In error:', error);
-    }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <form className="space-y-4" onSubmit={handleSubmit}>
+        {/* Error Message */}
+        {error && (
+          <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+            {error}
+          </div>
+        )}
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email Address
@@ -62,6 +74,7 @@ const LoginForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
             required
             value={email}
+            disabled={isLoading}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -71,9 +84,9 @@ const LoginForm = () => {
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <a href="/forgot-password" className="text-xs text-blue-600 hover:underline">
+            <Link href="/forgot-password" className="text-xs text-blue-600 hover:underline">
               Forgot password?
-            </a>
+            </Link>
           </div>
           <input 
             type="password" 
@@ -83,15 +96,17 @@ const LoginForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
             required
             value={password}
+            disabled={isLoading}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
         <button 
           type="submit" 
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm text-sm mt-2"
+          disabled={isLoading}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm text-sm mt-2"
         >
-          Sign In
+          {isLoading ? "Signing In..." : "Sign In"}
         </button>
       </form>
 
@@ -107,7 +122,7 @@ const LoginForm = () => {
         <button 
           type="button" 
           className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
-          onClick={handleGoogleSignIn}
+          onClick={() => handleSocialSignIn('google')}
         >
           <FcGoogle className="w-4 h-4" /> 
           <span>Google</span>
@@ -115,7 +130,7 @@ const LoginForm = () => {
         <button 
           type="button" 
           className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
-          onClick={handleGithubSignIn}
+          onClick={() => handleSocialSignIn('github')}
         >
           <SiGithub className="w-4 h-4" />
           <span>GitHub</span>
@@ -129,7 +144,7 @@ const LoginForm = () => {
         </Link>
       </p>
     </div>
-  )
-}
+  );
+};
 
 export default LoginForm;
