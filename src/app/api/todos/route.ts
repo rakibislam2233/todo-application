@@ -3,7 +3,7 @@ import { todos } from "@/db/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export async function GET(request: Request) {
-  const { env } = getCloudflareContext();
+  const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env);
   const todos = await db.query.todos.findMany();
   return new Response(JSON.stringify(todos), {
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { env } = getCloudflareContext();
+  const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env);
   const { title, description } =
     (await request.json()) as typeof todos.$inferSelect;

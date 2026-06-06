@@ -5,10 +5,12 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import ResetPasswordEmailTemplate from "./email/ResetPasswordEmailTemplate";
 import VerifyEmailTemplate from "./email/VerifyEmailTemplate";
-import resend from "./resend";
+import { getResend } from "./resend";
+import { render } from "react-email";
 
 export function getAuth(env: any) {
   const db = getDb(env);
+  const resend = getResend(env);
   return betterAuth({
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -66,14 +68,22 @@ export function getAuth(env: any) {
       },
       expiresIn: 3600, // 1 hour
       onEmailVerification: async (user) => {
-        await resend.emails.send({
-          from: "Todo App <onboarding@resend.dev>",
-          to: user.email,
-          subject: "Welcome to Todo Application! 🎉",
-          react: WelcomeEmailTemplate({
-            username: user.name,
-          }),
-        });
+        const html = await render(
+          WelcomeEmailTemplate({ username: user.name }),
+        );
+        await env.EMAIL_QUEUE.send(
+          {
+            type: "welcome_email",
+            payload: {
+              email: user.email,
+              name: user.name,
+              html,
+            },
+          },
+          {
+            delaySeconds: 600, // 10 minutes delay
+          },
+        );
       },
     },
     // ✅ Social Providers

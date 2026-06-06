@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { env } = getCloudflareContext();
+  const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env);
 
   const todo = await db.query.todos.findFirst({
@@ -25,7 +25,7 @@ export async function PATCH(
 ) {
   const { id } = await params;
 
-  const { env } = getCloudflareContext();
+  const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env);
   const { title, description, completed } =
     (await req.json()) as typeof todos.$inferSelect;
@@ -52,7 +52,7 @@ export async function PUT(
 ) {
   // toggle completed state
   const { id } = await params;
-  const { env } = getCloudflareContext();
+  const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env);
 
   const todo = await db.query.todos.findFirst({
@@ -87,7 +87,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { env } = getCloudflareContext();
+  const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env);
 
   await db.delete(todos).where(eq(todos.id, id));

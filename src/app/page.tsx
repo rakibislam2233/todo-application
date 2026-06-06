@@ -7,7 +7,7 @@ import React from "react";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 export const dynamic = "force-dynamic";
 const HomePage = async () => {
-  const { env } = getCloudflareContext();
+  const { env } = await getCloudflareContext({ async: true });
   const auth = getAuth(env);
   const session = await auth.api.getSession({
     headers: await headers(),
