@@ -28,15 +28,18 @@ export function getAuth(env: any) {
         console.log("Reset Url", url);
         // Send reset password email to user
         try {
-          await resend.emails.send({
-            from: "Todo App <onboarding@resend.dev>",
-            to: user.email,
-            subject: "Reset your Todo Application password",
-            react: ResetPasswordEmailTemplate({
+          const html = await render(
+            ResetPasswordEmailTemplate({
               username: user.name,
               resetUrl: url,
               expiresInMinutes: "60",
             }),
+          );
+          await resend.emails.send({
+            from: "Todo App <onboarding@resend.dev>",
+            to: user.email,
+            subject: "Reset your Todo Application password",
+            html,
           });
         } catch (error) {
           console.error("Error sending reset password email:", error);
@@ -52,14 +55,14 @@ export function getAuth(env: any) {
         console.log("Verification Url", url);
         // Send verification email to user
         try {
+          const html = await render(
+            VerifyEmailTemplate({ username: user.name, verifyUrl: url }),
+          );
           await resend.emails.send({
             from: "Todo App <onboarding@resend.dev>",
             to: user.email,
             subject: "Verify your email for Todo Application",
-            react: VerifyEmailTemplate({
-              username: user.name,
-              verifyUrl: url,
-            }),
+            html,
           });
         } catch (error) {
           console.error("Error sending verification email:", error);
