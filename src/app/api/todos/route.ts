@@ -14,7 +14,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const { env } = getCloudflareContext();
   const db = getDb(env);
-  const { title, description } = await request.json();
+  const { title, description } =
+    (await request.json()) as typeof todos.$inferSelect;
   const id = crypto.randomUUID();
   const newTodo = await db
     .insert(todos)

@@ -27,7 +27,8 @@ export async function PATCH(
 
   const { env } = getCloudflareContext();
   const db = getDb(env);
-  const { title, description, completed } = await req.json();
+  const { title, description, completed } =
+    (await req.json()) as typeof todos.$inferSelect;
   console.log("Updating Todo:", { id, title, description, completed });
 
   const updatedTodo = await db

@@ -12,7 +12,7 @@ export const {
   signUp,
   signOut,
   useSession,
-  requestPasswordReset,
+  forgetPassword,
   resetPassword,
   changePassword,
   sendVerificationEmail,
